@@ -493,6 +493,17 @@ class LavaURLsRandomizer(object):
     def __next__(self):
         return self.next()
 
+    def burn_url(self, url):
+        #TODO do this in a more pythonic way
+        logger.warning(
+            "Burning %s from list of URL generators."
+            % (url,)
+        )
+        for cur_index in range(len(self._generators)):
+            if self._generators[cur_index].url == url:
+                del(self._generators[cur_index])
+                break
+
     def next(self):
         while len(self._generators) > 0:
             index = random.randint(0, len(self._generators) - 1)
@@ -516,7 +527,7 @@ class LavaHTTPDiscoverer(object):
             self,
             urls_randomizer,
             result_file,
-            max_queue_size=2000,
+            max_queue_size=1000,
             max_clients=50,
             maintenance_interval=30,
             ):
@@ -609,10 +620,11 @@ class LavaHTTPDiscoverer(object):
         r_dict = self.__response_to_dict(response)
         if r_dict['code'] == 599:
             logger.debug(
-                "Request for URL at %s returned 599. Retrying."
+                "Request for URL at %s returned 599."
                 % (r_dict['url'],)
             )
-            self.__send_request(r_dict['url'])
+            #TODO find out how to better handle 599s
+            # might want to test the endpoints before firing off the Tornado ioloop
         elif r_dict['code'] != 404:
             self.__handle_success(r_dict)
         else:
