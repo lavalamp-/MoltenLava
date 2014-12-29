@@ -17,6 +17,7 @@
     limitations under the License.
 '''
 import logging
+from time import sleep
 from lib import LavaLib
 from datetime import datetime
 from libnmap.process import NmapProcess
@@ -31,14 +32,26 @@ def scan_host(target_host, num_tries):
             "Now running scan attempt #%d for host at %s."
             % (cur_try + 1, target_host)
         )
-        result = nm.run()
-        if result != 0:
+        result = nm.run_background()
+        while nm.is_running():
+            logger.debug(
+                "Scan running. ETC: %s. DONE: %s."
+                % (nm.etc, nm.progress)
+            )
+            sleep(2)
+        if nm.rc != 0:
             logger.warning(
                 "Scan #%d for host at %s failed!"
                 % (cur_try + 1, target_host)
             )
             cur_try += 1
-    if nm.state != NmapProcess.DONE:
+        else:
+            logger.debug(
+                "Scan for host at %s succeeded!"
+                % (target_host,)
+            )
+            break
+    if str(nm.state) != str(nm.DONE):
         logger.warning(
             "Scan for host at %s failed!"
             % (target_host,)
