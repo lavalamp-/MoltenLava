@@ -81,4 +81,8 @@ main() {
 	fi
 }
 
+#TODO Add usage
+#TODO Add lavalamp splash
+# Usage currently: bash LavaForeScoutScanner.sh <input host file> <output file> <max # of concurrent host scans>
+
 main $@
