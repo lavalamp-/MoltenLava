@@ -77,7 +77,6 @@ class LavaNTLMBruter(object):
         )
         for cur_password in self.passwords:
             self.try_all_users_with_pass(cur_password)
-        code.interact(local=locals())
 
     def __process_result(self, result, user, password):
         if result.status_code != 401:
