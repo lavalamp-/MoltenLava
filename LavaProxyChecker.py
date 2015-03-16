@@ -63,6 +63,12 @@ class LavaProxyChecker(object):
                 % (self._target_url, proxy_target)
             )
             return False
+        except requests.exceptions.ConnectionError:
+            logger.error(
+                "Request to %s through proxy %s failed due to ConnectionError/400."
+                % (self._target_url, proxy_target)
+            )
+            return False
         return True
 
     def test_all(self):
